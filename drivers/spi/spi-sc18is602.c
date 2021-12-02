@@ -117,7 +117,7 @@ static int sc18is602_txrx(struct sc18is602 *hw, struct spi_message *msg,
 			int rlen = hw->rindex + len;
 			
 			ret = sc18is602_wait_ready(hw, hw->tlen);
-			pr_err("sc18is602_wait_ready ret %d:\n", ret);
+			pr_err("sc18is602_wait_ready ret: %d\n", ret);
 			if (ret < 0)
 				return ret;
 			ret = i2c_master_recv(hw->client, hw->buffer, rlen);

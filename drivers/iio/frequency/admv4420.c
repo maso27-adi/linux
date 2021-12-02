@@ -514,7 +514,7 @@ pr_err("%s: %d: Enter ADMV4420 probe\n", __func__, __LINE__);
 
 	if (val != 0xAD) {
 		dev_err(indio_dev->dev.parent, "Failed ADMV4420 to read/write scratchpad %x ", val);
-		return -EIO;
+		// return -EIO;
 	}
 
 	ret = regmap_write(st->regmap, ADMV4420_SCRATCHPAD, 0x5A);
@@ -529,7 +529,7 @@ pr_err("%s: %d: Enter ADMV4420 probe\n", __func__, __LINE__);
 
 	if (val != 0x5A) {
 		dev_err(indio_dev->dev.parent, "Failed ADMV4420 to read/write scratchpad %x ", val);
-		return -EIO;
+		// return -EIO;
 	}
 	dev_err(indio_dev->dev.parent, "ADMV4420 to read/write scratchpad %x ", val);
 

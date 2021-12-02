@@ -125,6 +125,7 @@
 	// 	reg = <0>;
 	// 	spi-max-frequency = <100000>;
 	// 	spi-cpha;
+	// 	spi-cpol;
 	// 	vss-supply = <&dac_vss>;
 	// 	vdd-supply = <&dac_vdd>;
 	// };
@@ -137,9 +138,9 @@
 	// 	vss-supply = <&dac_vss>;
 	// 	vdd-supply = <&dac_vdd>;
 	// };
-	admv4420_CSB1@3 {
+	admv4420_CSB1@2 {
 		compatible = "adi,admv4420";
-		reg = <3>;
+		reg = <2>;
 		spi-max-frequency = <500000>;
 		label = "admv4420_CSB1";
 		// spi-cpol;
