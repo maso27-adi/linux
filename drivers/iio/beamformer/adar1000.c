@@ -239,6 +239,9 @@
 #define ADAR1000_SCRATCH_PAD_VAL_1	0xAD
 #define ADAR1000_SCRATCH_PAD_VAL_2	0xEA
 
+#define ADAR1000_ATTEN_VAL_MAX		127
+#define ADAR1000_ATTEN_VAL_MIN		0
+
 struct adar1000_phase {
 	u32 val;
 	u32 val2;
@@ -436,7 +439,7 @@ static int adar1000_get_atten(struct adar1000_state *st, u32 ch_num, u8 output)
 	return val;
 }
 
-static int adar1000_set_atten(struct adar1000_state *st, u32 atten_mdb,
+static int adar1000_set_atten(struct adar1000_state *st, s32 atten_mdb,
 			      u32 ch_num, u8 output)
 {
 	u32 reg;
@@ -450,6 +453,14 @@ static int adar1000_set_atten(struct adar1000_state *st, u32 atten_mdb,
 	ret = adar1000_mode_4wire(st, 1);
 	if (ret < 0)
 		return ret;
+
+	atten_mdb *= -1;
+	atten_mdb /= 1000;
+
+	if (atten_mdb > ADAR1000_ATTEN_VAL_MAX)
+		atten_mdb = ADAR1000_ATTEN_VAL_MAX;
+	if (atten_mdb < ADAR1000_ATTEN_VAL_MIN)
+		atten_mdb = ADAR1000_ATTEN_VAL_MIN;
 
 	ret = regmap_update_bits(st->regmap, st->dev_addr | reg,
 				 (u32)~ADAR1000_CH_ATTN, atten_mdb);
@@ -624,7 +635,7 @@ static int adar1000_write_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_HARDWAREGAIN:
-		return adar1000_set_atten(st, val, chan->channel,
+		return adar1000_set_atten(st, val2, chan->channel,
 					   chan->output);
 	case IIO_CHAN_INFO_PHASE:
 		return adar1000_set_phase(st, chan->channel, chan->output,

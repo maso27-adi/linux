@@ -264,10 +264,10 @@ class Stingray:
 					raise SystemError('Stingray power: Cant write device attribute')
 
 
-				iio.write_dev_ch_attr(self._name, 'voltage' + str(i), 'hardwaregain', 0x7f, '-i') #RX
+				iio.write_dev_ch_attr(self._name, 'voltage' + str(i), 'hardwaregain', -0.127, '-i') #RX
 				val = iio.write_dev_ch_attr(self._name, 'voltage' + str(i), 'phase', 0, '-i') #RX
 
-				val = iio.write_dev_ch_attr(self._name, 'voltage' + str(i), 'hardwaregain', 0x7f, '-o') #TX
+				val = iio.write_dev_ch_attr(self._name, 'voltage' + str(i), 'hardwaregain', -0.127, '-o') #TX
 				val = iio.write_dev_ch_attr(self._name, 'voltage' + str(i), 'phase', 0, '-o') #TX
 
 	def pulse_power_pin(self, which):
