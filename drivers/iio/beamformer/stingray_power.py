@@ -53,25 +53,28 @@ class Ltc2992:
 		self.get_gpio()
 
 	def export_gpios(self):
+		device = ''
 		devices = os.popen('grep "" /sys/class/gpio/gpiochip*/device/name').read()
 		devices = devices.split(sep="\n")
 		for line in devices:
 			if self._dev_name in line:
 				device = line
 				break
-
+		if device == '':
+			return
 		device = device.split(sep="/")
 		for line in device:
 			if 'gpiochip' in line:
 				device = line
 				break
-
+		if device == '':
+			return
 		device = device.replace('gpiochip', '')
 		gpio = int(device, 10)
-		os.system('echo ' + str(gpio + 0) + ' > /sys/class/gpio/export')
-		os.system('echo ' + str(gpio + 1) + ' > /sys/class/gpio/export')
-		os.system('echo ' + str(gpio + 2) + ' > /sys/class/gpio/export')
-		os.system('echo ' + str(gpio + 3) + ' > /sys/class/gpio/export')
+		os.popen('echo ' + str(gpio + 0) + ' > /sys/class/gpio/export').read()
+		os.popen('echo ' + str(gpio + 1) + ' > /sys/class/gpio/export').read()
+		os.popen('echo ' + str(gpio + 2) + ' > /sys/class/gpio/export').read()
+		os.popen('echo ' + str(gpio + 3) + ' > /sys/class/gpio/export').read()
 
 	def get_gpio(self):
 		device = ''
@@ -81,8 +84,9 @@ class Ltc2992:
 			if (self._dev_name in line) & ('GPIO1' in line):
 				device = line
 				break
-
 		device = device.replace('GPIO1', 'GPIO')
+		if device == '':
+			raise SystemError('Stingray power: Cant get GPIOs')
 		self._gpio_name = device
 
 	def power_sequencer_enable(self):
@@ -387,6 +391,9 @@ class Stingray:
 		lna_off = kwargs.get('lna_off', -2)
 		lna_on = kwargs.get('lna_on', -2)
 
+		if self.fully_powered():
+			return
+
 		# If the board is powered down
 		if not self.partially_powered():
 			self.pulse_power_pin('pwr_up_down')
@@ -431,11 +438,15 @@ if __name__ == '__main__':
 			print("Stingray power: Start power up sequence")
 			stingray = Stingray()
 			stingray.powerup(enable_5v=True)
+		elif sys.argv[1] == 'partial':
+			print("Stingray power: Start partial power up sequence")
+			stingray = Stingray()
+			stingray.powerup(enable_5v=False)
 		elif sys.argv[1] == 'down':
 			print("Stingray power: Start power down sequence")
 			stingray = Stingray()
 			stingray.powerdown()
 		else:
-			print('Stingray power: Please specify "up" or "down" option')
+			print('Stingray power: Please specify "up", "partial" or "down" option')
 	except IndexError:
 		print('Stingray power: Please specify "up" or "down" option')
