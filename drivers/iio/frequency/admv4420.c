@@ -498,7 +498,15 @@ static int admv4420_setup(struct iio_dev *indio_dev)
 	int ret;
 	pr_err("%s: %d: Enter ADMV4420 probe\n", __func__, __LINE__);
 	/* Software reset and activate SDO */
-	ret = regmap_write(st->regmap, ADMV4420_SPI_CONFIG_1, 0x81 | 0x18);
+	ret = regmap_write(st->regmap, ADMV4420_SPI_CONFIG_1, 0x81);
+	if (ret < 0)
+		return ret;
+
+	ret = regmap_write(st->regmap, ADMV4420_SPI_CONFIG_1, 0x18);
+	if (ret < 0)
+		return ret;
+
+	ret = regmap_write(st->regmap, ADMV4420_SDO_LEVEL, 0x05);
 	if (ret < 0)
 		return ret;
 
