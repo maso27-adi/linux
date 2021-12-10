@@ -10453,6 +10453,7 @@ L:	linux-iio@vger.kernel.org
 S:	Supported
 W:	http://ez.analog.com/community/linux-device-drivers
 F:	drivers/iio/dac/ltc2688.c
+F:	Documentation/ABI/testing/sysfs-bus-iio-dac-ltc2688
 
 LTC2947 HARDWARE MONITOR DRIVER
 M:	Nuno Sá <nuno.sa@analog.com>
