@@ -96,9 +96,10 @@
 		.info_mask_separate = AD4630_24_CH_MASK_SEPARATE(_realbits),	\
 		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
 		.indexed = 1,							\
-		.extend_name = _name,						\
+		.extend_name = _name#_sidx,					\
 		.channel = _idx,						\
-		.scan_index = _sidx, .ext_info = ad463x_ext_info,		\
+		.scan_index = _sidx,						\
+		.ext_info = ad463x_ext_info,					\
 		.scan_type = {							\
 			.sign = 's',						\
 			.storagebits = _storagebits,				\
@@ -108,15 +109,8 @@
 	}
 
 enum ad463x_id {
+	ID_AD4030_24,
 	ID_AD4630_24,
-	ID_AD4630_20,
-	ID_AD4630_16,
-	ID_AD4631_24,
-	ID_AD4631_20,
-	ID_AD4631_16,
-	ID_AD4632_24,
-	ID_AD4632_20,
-	ID_AD4632_16,
 };
 
 enum ad463x_lane_mode {
@@ -729,33 +723,63 @@ static struct iio_chan_spec_ext_info ad463x_ext_info[] = {
 	{},
 };
 
-static const struct iio_chan_spec ad463x_channels[][5][4] = {
-	[ID_AD4630_24] = {
-		[AD463X_16_DIFF_8_COM] = {
-			AD4630_24_CHANNEL("differential_0",   0, 0, 32, 16, 8),
-			AD4630_24_CHANNEL("common_voltage_0", 1, 0, 32, 8,  0),
-			AD4630_24_CHANNEL("differential_1",   2, 1, 32, 16, 8),
-			AD4630_24_CHANNEL("common_voltage_1", 3, 1, 32, 8,  0),
+struct ad464x_chan_info {
+	struct iio_chan_spec channels[5][4];
+	int channels_number;
+};
+
+static const struct ad464x_chan_info ad463x_ch_info[] = {
+	[ID_AD4030_24] = {
+		.channels = {
+			[AD463X_16_DIFF_8_COM] = {
+				AD4630_24_CHANNEL("differential",   0, 0, 32, 16, 8),
+				AD4630_24_CHANNEL("common_voltage", 1, 0, 32, 8,  0),
+			},
+			[AD463X_24_DIFF] = {
+				AD4630_24_CHANNEL("differential", 0, 0, 32, 24, 0),
+			},
+			[AD463X_24_DIFF_8_COM] = {
+				AD4630_24_CHANNEL("differential",   0, 0, 32, 24, 8),
+				AD4630_24_CHANNEL("common_voltage", 1, 0, 32, 8,  0),
+			},
+			[AD463X_30_AVERAGED_DIFF] = {
+				AD4630_24_CHANNEL("differential", 0, 0, 32, 30, 2),
+			},
+			[AD463X_32_PATTERN] = {
+				AD4630_24_CHANNEL("pattern", 0, 0, 32, 32, 0),
+			},
 		},
-		[AD463X_24_DIFF] = {
-			AD4630_24_CHANNEL("differential_0", 0, 0, 32, 24, 0),
-			AD4630_24_CHANNEL("differential_1", 1, 1, 32, 24, 0),
-		},
-		[AD463X_24_DIFF_8_COM] = {
-			AD4630_24_CHANNEL("differential_0",   0, 0, 32, 24, 8),
-			AD4630_24_CHANNEL("common_voltage_0", 1, 0, 32, 8,  0),
-			AD4630_24_CHANNEL("differential_1",   2, 1, 32, 24, 8),
-			AD4630_24_CHANNEL("common_voltage_1", 3, 1, 32, 8,  0),
-		},
-		[AD463X_30_AVERAGED_DIFF] = {
-			AD4630_24_CHANNEL("differential_0", 0, 0, 32, 30, 2),
-			AD4630_24_CHANNEL("differential_1", 1, 1, 32, 30, 2),
-		},
-		[AD463X_32_PATTERN] = {
-			AD4630_24_CHANNEL("pattern_0", 0, 0, 32, 32, 0),
-			AD4630_24_CHANNEL("pattern_1", 1, 1, 32, 32, 0),
-		},
+		.channels_number = 1
 	},
+	[ID_AD4630_24] = {
+		.channels = {
+			[AD463X_16_DIFF_8_COM] = {
+				AD4630_24_CHANNEL("differential",   0, 0, 32, 16, 8),
+				AD4630_24_CHANNEL("common_voltage", 1, 0, 32, 8,  0),
+				AD4630_24_CHANNEL("differential",   2, 1, 32, 16, 8),
+				AD4630_24_CHANNEL("common_voltage", 3, 1, 32, 8,  0),
+			},
+			[AD463X_24_DIFF] = {
+				AD4630_24_CHANNEL("differential", 0, 0, 32, 24, 0),
+				AD4630_24_CHANNEL("differential", 1, 1, 32, 24, 0),
+			},
+			[AD463X_24_DIFF_8_COM] = {
+				AD4630_24_CHANNEL("differential",   0, 0, 32, 24, 8),
+				AD4630_24_CHANNEL("common_voltage", 1, 0, 32, 8,  0),
+				AD4630_24_CHANNEL("differential",   2, 1, 32, 24, 8),
+				AD4630_24_CHANNEL("common_voltage", 3, 1, 32, 8,  0),
+			},
+			[AD463X_30_AVERAGED_DIFF] = {
+				AD4630_24_CHANNEL("differential", 0, 0, 32, 30, 2),
+				AD4630_24_CHANNEL("differential", 1, 1, 32, 30, 2),
+			},
+			[AD463X_32_PATTERN] = {
+				AD4630_24_CHANNEL("pattern", 0, 0, 32, 32, 0),
+				AD4630_24_CHANNEL("pattern", 1, 1, 32, 32, 0),
+			},
+		},
+		.channels_number = 2
+	}
 };
 
 static const struct iio_dma_buffer_ops ad463x_dma_buffer_ops = {
@@ -769,6 +793,7 @@ static const struct iio_buffer_setup_ops ad463x_buffer_setup_ops = {
 };
 
 static const struct spi_device_id ad463x_id_table[] = { 
+	{ "ad4030-24", ID_AD4030_24 },
 	{ "ad4630-24", ID_AD4630_24 },
 	{}
 };
@@ -776,6 +801,7 @@ MODULE_DEVICE_TABLE(spi, ad463x_id_table);
 
 static const struct of_device_id ad463x_of_match[] = {
 	{ .compatible = "adi,ad4630-24" },
+	{ .compatible = "adi,ad4030-24" },
 	{},
 };
 MODULE_DEVICE_TABLE(of, ad463x_of_match);
@@ -788,13 +814,11 @@ static const struct attribute_group ad463x_group = {
 	.attrs = ad463x_attributes,
 };
 
-static const struct iio_info ad463x_infos[] = { 
-	[ID_AD4630_24] = {
-		.attrs = &ad463x_group,
-		.read_raw = &ad463x_read_raw,
-		.write_raw = &ad463x_write_raw,
-		.debugfs_reg_access = &ad463x_reg_access,
-	}
+static const struct iio_info ad463x_info = { 
+	.attrs = &ad463x_group,
+	.read_raw = &ad463x_read_raw,
+	.write_raw = &ad463x_write_raw,
+	.debugfs_reg_access = &ad463x_reg_access,
 };
 
 static int ad463x_probe(struct spi_device *spi)
@@ -832,7 +856,7 @@ static int ad463x_probe(struct spi_device *spi)
 
 	indio_dev->dev.parent = &spi->dev;
 	indio_dev->name = spi_get_device_id(spi)->name;
-	indio_dev->info = &ad463x_infos[device_id];
+	indio_dev->info = &ad463x_info;
 	indio_dev->modes = INDIO_BUFFER_HARDWARE;
 	indio_dev->setup_ops = &ad463x_buffer_setup_ops;
 
@@ -843,8 +867,8 @@ static int ad463x_probe(struct spi_device *spi)
 		return -EINVAL;
 	}
 
-	indio_dev->channels = ad463x_channels[device_id][st->phy.out_data_mode];
-	indio_dev->num_channels = 2;
+	indio_dev->channels = ad463x_ch_info[device_id].channels[st->phy.out_data_mode];
+	indio_dev->num_channels = ad463x_ch_info[device_id].channels_number;
 	if (st->phy.out_data_mode == AD463X_16_DIFF_8_COM ||
 	    st->phy.out_data_mode == AD463X_24_DIFF_8_COM)
 		indio_dev->num_channels *= 2;

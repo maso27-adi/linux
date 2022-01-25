@@ -85,15 +85,15 @@
 		#address-cells = <0x1>;
 		#size-cells = <0x0>;
 
-		ad4630_24: ad4630-24@0 {
-			compatible = "adi,ad4630-24";
+		ad4030_24: ad4030-24@0 {
+			compatible = "adi,ad4030-24";
 			reg = <0>;
 			vref-supply = <&vref>;
 			spi-max-frequency = <80000000>;
 			adi,lane-mode = "two-lanes-per-ch";
 			adi,clock-mode = "spi-compatible";
 			adi,data-rate-mode = "single";
-			adi,out-data-mode = "24diff-8com";
+			adi,out-data-mode = "30diff-avg";
 			reset-gpios = <&gpio0 86 GPIO_ACTIVE_LOW>;
 			dmas = <&rx_dma 0>;
 			dma-names = "rx";
