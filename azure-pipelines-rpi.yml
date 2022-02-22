@@ -49,6 +49,10 @@ stages:
       clean: true
     - script: ./ci/travis/run-build-docker.sh
       displayName: "Build test for '$(DEFCONFIG)'"
+    - script: |
+        cd '/home/vsts/work/1/s/.config'
+        ls
+      displayName: 'Chech for modules'
     - task: CopyFiles@2
       inputs:
         sourceFolder: '$(Agent.BuildDirectory)/s/arch/arm/boot/dts/overlays'
@@ -95,7 +99,7 @@ stages:
           DEST_SERVER: $(SERVER_ADDRESS)
         displayName: "Push to SWDownloads"
   - job: Push_to_Artifactory
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/rpi-5.10.y'))
+    #condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/rpi-5.10.y'))
     pool:
       name: Default
       demands:

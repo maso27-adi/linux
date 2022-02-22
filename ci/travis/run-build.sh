@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -x
 
 # cd to docker build dir if it exists
 if [ -d /docker_build_dir ] ; then

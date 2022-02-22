@@ -1,4 +1,5 @@
 #!/bin/sh -e
+set -x
 
 TRAVIS_BUILD_DIR=${TRAVIS_BUILD_DIR:-'./'}
 

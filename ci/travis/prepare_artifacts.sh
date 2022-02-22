@@ -26,7 +26,7 @@ artifacts_structure() {
 			mv ./zImage ./kernel.img
 		fi
 		cd ../
-		mv ./adi_${bcm}_defconfig ./${timestamp}/adi_${bcm}_defconfig
+		cp -r ./adi_${bcm}_defconfig/* ./${timestamp}
 	done
 }
 
